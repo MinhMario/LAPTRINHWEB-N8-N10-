@@ -1,0 +1,25 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# User uploads (giữ lại default-avatar.png)
+uploads/*
+!uploads/default-avatar.png
+!uploads/.gitkeep
+Laptrinhweb(n8-n10)/uploads/*
+!Laptrinhweb(n8-n10)/uploads/default-avatar.png
+!Laptrinhweb(n8-n10)/uploads/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
