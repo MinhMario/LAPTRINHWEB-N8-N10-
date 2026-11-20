@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Duyệt yêu cầu cập nhật</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Duyệt yêu cầu cập nhật hồ sơ</h1>
+
+    <div class="filter-bar filter-bar-requests">
+      <select class="form-select" id="status-filter" aria-label="Lọc theo trạng thái">
+        <option value="pending" selected>Chờ duyệt</option>
+        <option value="approved">Đã duyệt</option>
+        <option value="rejected">Từ chối</option>
+        <option value="all">Tất cả</option>
+      </select>
+    </div>
+
+    <div id="status-message" class="status-message" hidden></div>
+
+    <div class="table-wrap">
+      <table class="requests-table">
+        <thead><tr><th>Mã SV</th><th>Họ tên</th><th>Ngày gửi</th><th>Trạng thái</th><th>Ngày xử lý</th><th></th></tr></thead>
+        <tbody id="request-table-body"></tbody>
+      </table>
+    </div>
+    <div id="pagination" class="pagination-container"></div>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <div class="modal" id="request-modal" hidden>
+    <div class="modal-content">
+      <div class="modal-head"><h2>Chi tiết yêu cầu</h2><button type="button" class="btn btn-outline btn-sm" id="modal-close-x" aria-label="Đóng">✕</button></div>
+
+      <div class="student-box">
+        <img id="req-avatar" class="avatar-sm" src="/uploads/default-avatar.png" alt="">
+        <div><strong id="req-student-name"></strong><br><span class="text-muted" id="req-student-code"></span></div>
+      </div>
+      <p>Trạng thái: <span id="req-status"></span> · Gửi lúc <span id="req-created"></span></p>
+
+      <div class="table-wrap">
+        <table class="requests-table compare-table">
+          <thead><tr><th>Trường</th><th>Hiện tại</th><th>Đề nghị</th></tr></thead>
+          <tbody id="compare-body"></tbody>
+        </table>
+      </div>
+
+      <p id="req-reject-reason" class="reject-note" hidden></p>
+      <div class="form-error" id="request-form-error"></div>
+
+      <form id="request-form" novalidate>
+        <div class="reject-box" id="reject-box" hidden>
+          <label class="form-label" for="reject_reason"><strong>Lý do từ chối *</strong></label>
+          <textarea class="form-control" id="reject_reason" name="reject_reason" rows="3" maxlength="255"></textarea>
+          <span class="field-error" data-error-for="reject_reason"></span>
+        </div>
+        <div class="modal-foot" id="action-foot">
+          <button type="button" class="btn btn-outline" id="modal-close">Đóng</button>
+          <button type="button" class="btn btn-danger" id="reject-btn">Từ chối</button>
+          <button type="submit" class="btn btn-danger" id="confirm-reject-btn" hidden>Xác nhận từ chối</button>
+          <button type="button" class="btn btn-success" id="approve-btn">Duyệt</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/requests.js"></script>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Thông tin sinh viên</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <div class="page-head">
+      <h1 class="page-title" id="form-title">Thêm sinh viên</h1>
+      <a class="btn btn-outline" href="manage.html">← Quay lại danh sách</a>
+    </div>
+
+    <div id="status-message" class="status-message" hidden></div>
+
+    <form id="student-form" class="card" novalidate>
+      <div id="form-error" class="form-error"></div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="student_code">Mã sinh viên *</label>
+          <input class="form-control" type="text" id="student_code" name="student_code" maxlength="20" placeholder="VD: B24DTCN001">
+          <span class="field-error" data-error-for="student_code"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="full_name">Họ và tên *</label>
+          <input class="form-control" type="text" id="full_name" name="full_name" maxlength="100">
+          <span class="field-error" data-error-for="full_name"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="gender">Giới tính *</label>
+          <select class="form-select" id="gender" name="gender">
+            <option value="">-- Chọn --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+          <span class="field-error" data-error-for="gender"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="birth_date">Ngày sinh *</label>
+          <input class="form-control" type="date" id="birth_date" name="birth_date">
+          <span class="field-error" data-error-for="birth_date"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="email">Email *</label>
+          <input class="form-control" type="email" id="email" name="email" maxlength="100">
+          <span class="field-error" data-error-for="email"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="phone">Số điện thoại *</label>
+          <input class="form-control" type="tel" id="phone" name="phone" maxlength="10" placeholder="10 chữ số, bắt đầu bằng 0">
+          <span class="field-error" data-error-for="phone"></span>
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label" for="class_id">Lớp *</label>
+          <select class="form-select" id="class_id" name="class_id"><option value="">-- Chọn lớp --</option></select>
+          <span class="field-error" data-error-for="class_id"></span>
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label" for="address">Địa chỉ</label>
+          <input class="form-control" type="text" id="address" name="address" maxlength="255">
+          <span class="field-error" data-error-for="address"></span>
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label" for="hobbies">Sở thích</label>
+          <textarea class="form-control" id="hobbies" name="hobbies" rows="3"></textarea>
+          <span class="field-error" data-error-for="hobbies"></span>
+        </div>
+        <div class="form-group span-2">
+          <label class="form-label" for="avatar">Ảnh đại diện (jpg, png, webp; tối đa 2MB)</label>
+          <img id="avatar-preview" class="avatar-preview" src="/uploads/default-avatar.png" alt="Ảnh đại diện">
+          <input class="form-control" type="file" id="avatar" name="avatar" accept="image/jpeg,image/png,image/webp">
+          <span class="field-error" data-error-for="avatar"></span>
+          <label class="check-row" id="remove-avatar-group" hidden>
+            <input type="checkbox" id="remove_avatar" name="remove_avatar" value="1"> Xóa ảnh hiện tại (về ảnh mặc định)
+          </label>
+        </div>
+      </div>
+
+      <section class="dynamic-section">
+        <h3>Kỹ năng</h3>
+        <div id="skill-rows"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="add-skill-btn">+ Thêm kỹ năng</button>
+        <datalist id="skill-suggestions"></datalist>
+      </section>
+
+      <section class="dynamic-section">
+        <h3>Mạng xã hội</h3>
+        <div id="social-rows"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="add-social-btn">+ Thêm mạng xã hội</button>
+      </section>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="submit-btn">Lưu</button>
+        <a class="btn btn-outline" href="manage.html">Hủy</a>
+      </div>
+    </form>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/admin-common.js"></script>
+  <script src="js/form.js"></script>
+</body>
+</html>
