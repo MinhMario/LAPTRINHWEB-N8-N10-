@@ -1,0 +1,14 @@
+# Back-end
+fastapi==0.163.2
+uvicorn[standard]==0.54.0
+sqlalchemy==2.1.9
+pymysql==1.2.4
+cryptography==50.0.2        # PyMySQL cần để đăng nhập MySQL 8 (caching_sha2_password)
+python-multipart==0.0.34    # nhận FormData / upload ảnh
+itsdangerous==2.2.0         # ký cookie session
+bcrypt==5.0.0
+python-dotenv==1.2.4
+
+# Kiểm thử
+pytest==9.2.0
+httpx==0.28.1
