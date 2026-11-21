@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+venv/
+.venv/
+.pytest_cache/
+.idea/
+.vscode/
+# ảnh người dùng upload (giữ lại ảnh mặc định)
+uploads/*
+!uploads/default-avatar.png
+!uploads/.gitkeep

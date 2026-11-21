@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quản lý sinh viên</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <div class="page-head">
+      <h1 class="page-title">Quản lý sinh viên</h1>
+      <a class="btn btn-primary" href="/pages/admin-form.html">+ Thêm sinh viên</a>
+    </div>
+
+    <div class="filter-bar">
+      <input class="form-control" type="search" id="search-input" placeholder="Tìm theo họ tên hoặc mã SV" aria-label="Tìm kiếm">
+      <select class="form-select" id="major-filter" aria-label="Lọc theo ngành"><option value="">Tất cả ngành</option></select>
+      <select class="form-select" id="class-filter" aria-label="Lọc theo lớp"><option value="">Tất cả lớp</option></select>
+      <select class="form-select" id="sort-select" aria-label="Sắp xếp">
+        <option value="newest">Mới nhất</option>
+        <option value="name">Họ tên A→Z</option>
+        <option value="class">Theo lớp</option>
+      </select>
+    </div>
+
+    <div id="status-message" class="status-message" hidden></div>
+
+    <div class="table-wrap">
+      <table class="requests-table">
+        <thead>
+          <tr><th>Ảnh</th><th>Mã SV</th><th>Họ tên</th><th>Lớp</th><th>Email</th><th>Thao tác</th></tr>
+        </thead>
+        <tbody id="student-table-body"></tbody>
+      </table>
+    </div>
+    <div id="pagination" class="pagination-container"></div>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-common.js"></script>
+  <script src="/js/pages/admin-manage.js"></script>
+</body>
+</html>

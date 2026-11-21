@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard - Quản lý hồ sơ sinh viên</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Dashboard</h1>
+    <div id="status-message" class="status-message" hidden></div>
+
+    <section class="stat-grid">
+      <div class="card stat-card"><div class="stat-value" id="total-students">-</div><div class="stat-label">Sinh viên</div></div>
+      <div class="card stat-card"><div class="stat-value" id="total-classes">-</div><div class="stat-label">Lớp</div></div>
+      <div class="card stat-card"><div class="stat-value" id="total-majors">-</div><div class="stat-label">Ngành</div></div>
+      <div class="card stat-card"><div class="stat-value" id="pending-requests">-</div><div class="stat-label"><a href="/pages/admin-requests.html">Yêu cầu chờ duyệt</a></div></div>
+    </section>
+
+    <section class="dash-grid">
+      <div class="card">
+        <h2>Sinh viên theo lớp</h2>
+        <div class="chart-box"><canvas id="class-chart"></canvas></div>
+      </div>
+      <div class="card">
+        <h2>Hồ sơ mới nhất</h2>
+        <ul id="recent-list" class="recent-list"></ul>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-common.js"></script>
+  <script src="/js/pages/admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lớp &amp; ngành</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Lớp &amp; ngành</h1>
+    <div id="status-message" class="status-message" hidden></div>
+
+    <div class="two-col">
+      <section class="card">
+        <div class="page-head">
+          <h2 class="page-title">Ngành</h2>
+          <button type="button" class="btn btn-primary btn-sm" id="add-major-btn">+ Thêm ngành</button>
+        </div>
+        <div class="table-wrap">
+          <table class="requests-table">
+            <thead><tr><th>Mã</th><th>Tên ngành</th><th>Số lớp</th><th>Thao tác</th></tr></thead>
+            <tbody id="major-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="page-head">
+          <h2 class="page-title">Lớp</h2>
+          <button type="button" class="btn btn-primary btn-sm" id="add-class-btn">+ Thêm lớp</button>
+        </div>
+        <div class="filter-bar filter-bar-requests">
+          <select class="form-select" id="major-filter" aria-label="Lọc lớp theo ngành"><option value="">Tất cả ngành</option></select>
+        </div>
+        <div class="table-wrap">
+          <table class="requests-table">
+            <thead><tr><th>Mã lớp</th><th>Tên lớp</th><th>Ngành</th><th>Số SV</th><th>Thao tác</th></tr></thead>
+            <tbody id="class-table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <!-- Modal ngành -->
+  <div class="modal" id="major-modal" hidden>
+    <div class="modal-content">
+      <div class="modal-head"><h2 id="major-modal-title">Thêm ngành</h2><button type="button" class="btn btn-outline btn-sm" id="major-cancel-x" aria-label="Đóng">✕</button></div>
+      <form id="major-form" novalidate>
+        <div class="form-error" id="major-form-error"></div>
+        <div class="form-group">
+          <label class="form-label" for="major-code">Mã ngành *</label>
+          <input class="form-control" type="text" id="major-code" name="code" maxlength="10">
+          <span class="field-error" data-error-for="code"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="major-name">Tên ngành *</label>
+          <input class="form-control" type="text" id="major-name" name="name" maxlength="100">
+          <span class="field-error" data-error-for="name"></span>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-outline" id="major-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="major-submit">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal lớp -->
+  <div class="modal" id="class-modal" hidden>
+    <div class="modal-content">
+      <div class="modal-head"><h2 id="class-modal-title">Thêm lớp</h2><button type="button" class="btn btn-outline btn-sm" id="class-cancel-x" aria-label="Đóng">✕</button></div>
+      <form id="class-form" novalidate>
+        <div class="form-error" id="class-form-error"></div>
+        <div class="form-group">
+          <label class="form-label" for="class-code">Mã lớp *</label>
+          <input class="form-control" type="text" id="class-code" name="code" maxlength="20">
+          <span class="field-error" data-error-for="code"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="class-name">Tên lớp *</label>
+          <input class="form-control" type="text" id="class-name" name="name" maxlength="100">
+          <span class="field-error" data-error-for="name"></span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="class-major">Ngành *</label>
+          <select class="form-select" id="class-major" name="major_id"><option value="">-- Chọn ngành --</option></select>
+          <span class="field-error" data-error-for="major_id"></span>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-outline" id="class-cancel">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="class-submit">Lưu</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-common.js"></script>
+  <script src="/js/pages/admin-classes.js"></script>
+</body>
+</html>

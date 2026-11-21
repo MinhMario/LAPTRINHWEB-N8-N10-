@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nhật ký thao tác</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <header class="site-header"></header>
+  <main class="container">
+    <h1 class="page-title">Nhật ký thao tác</h1>
+
+    <div class="filter-bar filter-bar-audit">
+      <select class="form-select" id="action-filter" aria-label="Lọc theo hành động">
+        <option value="">Tất cả hành động</option>
+        <option value="create">Thêm (create)</option>
+        <option value="update">Sửa (update)</option>
+        <option value="delete">Xóa (delete)</option>
+        <option value="approve">Duyệt (approve)</option>
+        <option value="reject">Từ chối (reject)</option>
+      </select>
+      <select class="form-select" id="target-type-filter" aria-label="Lọc theo đối tượng">
+        <option value="">Tất cả đối tượng</option>
+        <option value="student">Sinh viên (student)</option>
+        <option value="class">Lớp (class)</option>
+        <option value="major">Ngành (major)</option>
+      </select>
+      <input class="form-control" type="number" id="target-id-filter" min="1" placeholder="Mã bản ghi (target_id)" aria-label="Mã bản ghi">
+      <button type="button" class="btn btn-outline" id="reset-filter-btn">Xóa bộ lọc</button>
+    </div>
+
+    <div id="status-message" class="status-message" hidden></div>
+
+    <div class="table-wrap">
+      <table class="requests-table">
+        <thead><tr><th>Thời gian</th><th>Người thao tác</th><th>Hành động</th><th>Đối tượng</th><th>Mã</th><th></th></tr></thead>
+        <tbody id="audit-table-body"></tbody>
+      </table>
+    </div>
+    <div id="pagination" class="pagination-container"></div>
+  </main>
+  <footer class="site-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/admin-common.js"></script>
+  <script src="/js/pages/admin-audit.js"></script>
+</body>
+</html>

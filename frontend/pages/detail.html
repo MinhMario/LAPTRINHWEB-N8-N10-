@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi tiết Sinh viên | PTIT StudentHub</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body>
+  <!-- Header Navbar điều hướng -->
+  <header class="site-header"></header>
+
+  <main class="container">
+    <!-- Nút điều hướng quay lại -->
+    <div style="margin-bottom: 1.5rem;">
+      <a href="/index.html" class="btn btn-outline btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Quay lại danh sách
+      </a>
+    </div>
+
+    <!-- Thông báo trạng thái: Đang tải / Lỗi 404 -->
+    <div id="status-message" class="status-message" style="display: none;"></div>
+
+    <!-- Bố cục chi tiết 2 cột -->
+    <div id="student-detail" class="detail-layout" style="display: none;">
+      <!-- Cột 1: Thông tin tổng quan (Profile Card) -->
+      <aside class="profile-card">
+        <div class="profile-avatar-wrapper">
+          <img id="detail-avatar" class="profile-avatar-large" src="" alt="" onerror="handleAvatarError(this)">
+          <span id="detail-gender-badge" class="gender-indicator" title="Giới tính"></span>
+        </div>
+
+        <h1 id="detail-name" class="profile-card-name"></h1>
+        <div id="detail-code" class="profile-card-code"></div>
+
+        <div style="margin: 12px 0; color: var(--color-text-secondary); font-size: 0.95rem;">
+          <div style="font-weight: 600; color: var(--color-text);" id="detail-class"></div>
+          <div style="font-size: 0.88rem; color: var(--color-text-muted); margin-top: 2px;" id="detail-major"></div>
+        </div>
+
+        <!-- Danh sách liên kết mạng xã hội -->
+        <div id="detail-social-section" style="margin-top: 1.5rem;">
+          <label style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--color-text-muted); display: block; margin-bottom: 8px;">
+            Mạng xã hội & Liên kết
+          </label>
+          <div id="detail-social-links" class="profile-social-list"></div>
+        </div>
+
+        <!-- Các nút hành động phụ -->
+        <div id="profile-actions" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 8px;">
+          <!-- Nút tự cập nhật nếu là chính chủ sinh viên này -->
+          <a id="btn-edit-self" href="/pages/profile-edit.html" class="btn btn-primary" style="display: none;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            Chỉnh sửa thông tin của tôi
+          </a>
+          <button id="btn-share" class="btn btn-outline btn-sm">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+            Sao chép liên kết hồ sơ
+          </button>
+        </div>
+      </aside>
+
+      <!-- Cột 2: Nội dung chi tiết (Tabs / Sections) -->
+      <section class="detail-content">
+        <!-- Khối Thông tin cá nhân -->
+        <div class="section-card">
+          <h2 class="section-title">
+            <svg class="section-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            Thông tin cá nhân
+          </h2>
+          <div class="detail-grid-info">
+            <div class="info-block">
+              <label>Ngày sinh</label>
+              <div id="detail-birth-date" class="value"></div>
+            </div>
+            <div class="info-block">
+              <label>Giới tính</label>
+              <div id="detail-gender" class="value"></div>
+            </div>
+            <div class="info-block">
+              <label>Địa chỉ Email</label>
+              <div id="detail-email" class="value"></div>
+            </div>
+            <div class="info-block">
+              <label>Số điện thoại</label>
+              <div id="detail-phone" class="value"></div>
+            </div>
+            <div class="info-block" style="grid-column: span 2;">
+              <label>Địa chỉ thường trú</label>
+              <div id="detail-address" class="value"></div>
+            </div>
+            <div class="info-block">
+              <label>Ngày gia nhập</label>
+              <div id="detail-created-at" class="value"></div>
+            </div>
+            <div class="info-block">
+              <label>Cập nhật lần cuối</label>
+              <div id="detail-updated-at" class="value"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Khối Kỹ năng chuyên môn -->
+        <div class="section-card" id="detail-skills-card">
+          <h2 class="section-title">
+            <svg class="section-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            Kỹ năng chuyên môn
+          </h2>
+          <div id="detail-skills-list" class="skills-list"></div>
+        </div>
+
+        <!-- Khối Sở thích -->
+        <div class="section-card" id="detail-hobbies-card">
+          <h2 class="section-title">
+            <svg class="section-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            Sở thích & Điểm mạnh
+          </h2>
+          <div id="detail-hobbies-content" style="color: var(--color-text); line-height: 1.7; font-size: 0.95rem;"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/pages/detail.js"></script>
+</body>
+</html>

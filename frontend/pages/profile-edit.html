@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cập nhật Hồ sơ | PTIT StudentHub</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+</head>
+<body>
+  <!-- Header Navbar điều hướng -->
+  <header class="site-header"></header>
+
+  <main class="container">
+    <div style="margin-bottom: 1.5rem;">
+      <a href="/pages/profile.html" class="btn btn-outline btn-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Quay lại hồ sơ
+      </a>
+    </div>
+
+    <div class="page-header">
+      <h1 class="page-title">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color: var(--color-primary);"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Đề Nghị Cập Nhật Hồ Sơ
+      </h1>
+      <p class="page-subtitle">Các thông tin sau khi bạn gửi sẽ được Quản trị viên (Admin) xem xét và phê duyệt.</p>
+    </div>
+
+    <!-- Cảnh báo nếu đang có yêu cầu chờ duyệt -->
+    <div id="pending-alert" class="alert-banner alert-banner-warning" style="display: none;">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <div>
+        <strong>Bạn đang có 1 yêu cầu cập nhật hồ sơ đang chờ duyệt!</strong>
+        <p style="margin-top: 2px;">Vui lòng đợi quản trị viên xử lý yêu cầu trước khi gửi yêu cầu mới.</p>
+      </div>
+    </div>
+
+    <!-- Thông báo trạng thái khi đang tải dữ liệu ban đầu -->
+    <div id="status-message" class="status-message" style="display: none;"></div>
+
+    <div id="edit-layout" class="detail-layout" style="display: none;">
+      <!-- Cột 1: Thông tin chỉ đọc (Admin quản lý) -->
+      <aside class="profile-card">
+        <div class="profile-avatar-wrapper">
+          <img id="ro-avatar" class="profile-avatar-large" src="" alt="" onerror="handleAvatarError(this)">
+        </div>
+
+        <h3 id="ro-name" class="profile-card-name" style="font-size: 1.25rem;"></h3>
+        <div id="ro-code" class="profile-card-code"></div>
+
+        <div style="text-align: left; background: #f8fafc; padding: 14px; border-radius: var(--radius); margin-top: 1rem; border: 1px solid var(--color-border); font-size: 0.88rem;">
+          <div style="display: flex; align-items: center; gap: 6px; color: #475569; font-weight: 700; margin-bottom: 8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Thông tin cố định
+          </div>
+          <p style="color: var(--color-text-muted); font-size: 0.8rem; margin-bottom: 8px;">
+            Các trường sau chỉ Quản trị viên mới có quyền điều chỉnh:
+          </p>
+          <div style="display: flex; flex-direction: column; gap: 6px;">
+            <div><strong>Lớp:</strong> <span id="ro-class"></span></div>
+            <div><strong>Ngành:</strong> <span id="ro-major"></span></div>
+            <div><strong>Email:</strong> <span id="ro-email"></span></div>
+            <div><strong>Ngày sinh:</strong> <span id="ro-birth-date"></span></div>
+            <div><strong>Giới tính:</strong> <span id="ro-gender"></span></div>
+          </div>
+          <div style="margin-top: 10px; font-size: 0.78rem; color: #0284c7; background: #e0f2fe; padding: 6px 8px; border-radius: 4px;">
+            ℹ️ Liên hệ phòng đào tạo hoặc Admin để đổi ảnh đại diện hay sửa các mục trên.
+          </div>
+        </div>
+      </aside>
+
+      <!-- Cột 2: Form nhập thông tin sinh viên được phép sửa -->
+      <section class="detail-content">
+        <div class="section-card">
+          <!-- Vùng thông báo lỗi chung -->
+          <div id="form-error"></div>
+
+          <form id="request-form" novalidate>
+            <!-- 1. Số điện thoại -->
+            <div class="form-group">
+              <label class="form-label" for="phone">
+                Số điện thoại liên hệ <span class="required">*</span>
+              </label>
+              <input 
+                type="tel" 
+                id="phone" 
+                name="phone" 
+                class="form-control" 
+                placeholder="Ví dụ: 0912345678" 
+                maxlength="10" 
+                required
+              >
+              <span class="field-error" data-error-for="phone"></span>
+              <small style="color: var(--color-text-muted); font-size: 0.82rem;">Bắt buộc 10 chữ số, bắt đầu bằng số 0.</small>
+            </div>
+
+            <!-- 2. Địa chỉ thường trú -->
+            <div class="form-group">
+              <label class="form-label" for="address">Địa chỉ thường trú / tạm trú</label>
+              <input 
+                type="text" 
+                id="address" 
+                name="address" 
+                class="form-control" 
+                placeholder="Ví dụ: Hà Đông, Hà Nội" 
+                maxlength="255"
+              >
+              <span class="field-error" data-error-for="address"></span>
+              <small style="color: var(--color-text-muted); font-size: 0.82rem;">Xóa hết để làm trống địa chỉ.</small>
+            </div>
+
+            <!-- 3. Sở thích -->
+            <div class="form-group">
+              <label class="form-label" for="hobbies">Sở thích & Điểm mạnh</label>
+              <textarea 
+                id="hobbies" 
+                name="hobbies" 
+                class="form-control" 
+                rows="3" 
+                placeholder="Ví dụ: Đọc sách, chơi cờ vua, lập trình Python..."
+              ></textarea>
+              <span class="field-error" data-error-for="hobbies"></span>
+            </div>
+
+            <!-- 4. Kỹ năng chuyên môn (Động) -->
+            <div class="form-group" style="margin-top: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label class="form-label" style="margin-bottom: 0;">
+                  Kỹ năng chuyên môn & Mức độ
+                </label>
+                <button type="button" id="btn-add-skill" class="btn btn-outline btn-sm">
+                  + Thêm kỹ năng
+                </button>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 10px;">
+                Đánh giá kỹ năng từ mức 1 (Cơ bản) đến 5 (Thành thạo). Có hỗ trợ gợi ý kỹ năng phổ biến.
+              </p>
+              
+              <div id="skills-container"></div>
+              <span class="field-error" data-error-for="skills"></span>
+            </div>
+
+            <!-- 5. Mạng xã hội & Liên kết (Động) -->
+            <div class="form-group" style="margin-top: 1.5rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label class="form-label" style="margin-bottom: 0;">
+                  Liên kết mạng xã hội
+                </label>
+                <button type="button" id="btn-add-social" class="btn btn-outline btn-sm">
+                  + Thêm liên kết
+                </button>
+              </div>
+              <p style="font-size: 0.82rem; color: var(--color-text-muted); margin-bottom: 10px;">
+                Mỗi nền tảng chỉ thêm một liên kết duy nhất. Đường dẫn phải bắt đầu bằng http:// hoặc https://.
+              </p>
+
+              <div id="social-container"></div>
+              <span class="field-error" data-error-for="social_links"></span>
+            </div>
+
+            <!-- Datalist gợi ý kỹ năng -->
+            <datalist id="skills-datalist"></datalist>
+
+            <!-- Nút gửi đề nghị -->
+            <div style="display: flex; gap: 12px; margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--color-border);">
+              <button type="submit" id="btn-submit" class="btn btn-primary btn-lg" style="flex: 1;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                Gửi yêu cầu cập nhật
+              </button>
+              <a href="/pages/profile.html" class="btn btn-outline btn-lg">Hủy bỏ</a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer"></footer>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/pages/profile-edit.js"></script>
+</body>
+</html>
