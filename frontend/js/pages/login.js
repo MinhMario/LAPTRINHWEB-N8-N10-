@@ -33,18 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 3. Xử lý các nút bấm điền tài khoản mẫu
-  const sampleBtns = document.querySelectorAll(".sample-btn");
-  sampleBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      clearErrors(form);
-      usernameInput.value = btn.getAttribute("data-user");
-      passwordInput.value = btn.getAttribute("data-pass");
-      usernameInput.focus();
-    });
-  });
-
-  // 4. Bắt sự kiện gửi form đăng nhập
+  // 3. Bắt sự kiện gửi form đăng nhập
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearErrors(form);
