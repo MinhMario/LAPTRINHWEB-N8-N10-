@@ -1,5 +1,10 @@
-// dashboard.js - thẻ số liệu, biểu đồ theo lớp, 5 hồ sơ mới nhất (GET /api/stats)
+/**
+ * js/pages/admin-dashboard.js - Trang Dashboard thống kê (GET /api/stats)
+ */
+
 let classChart = null;
+
+// ── HIỂN THỊ DỮ LIỆU ─────────────────────────────────────────────────────────
 
 function renderStats(stats) {
   setText("total-students", stats.total_students);
@@ -10,32 +15,47 @@ function renderStats(stats) {
 
 function renderChart(byClass) {
   const canvas = document.getElementById("class-chart");
+
+  // Dự phòng khi mất mạng không tải được Chart.js từ CDN
   if (typeof Chart === "undefined") {
-    // CDN không tải được (mất mạng): hiện danh sách số liệu thay thế
-    canvas.replaceWith(document.createTextNode(
-      byClass.map((c) => `${c.class_code}: ${c.count}`).join(" | ") || "Không có kết quả"
-    ));
+    const summary = byClass.map((c) => `${c.class_code}: ${c.count}`).join(" | ");
+    canvas.replaceWith(document.createTextNode(summary || "Không có kết quả"));
     return;
   }
-  if (classChart) classChart.destroy();
+
+  if (classChart) {
+    classChart.destroy();
+  }
+
   classChart = new Chart(canvas, {
     type: "bar",
     data: {
       labels: byClass.map((c) => c.class_code),
-      datasets: [{
-        label: "Số sinh viên",
-        data: byClass.map((c) => c.count),
-        backgroundColor: "#1a73e8",
-      }],
+      datasets: [
+        {
+          label: "Số sinh viên",
+          data: byClass.map((c) => c.count),
+          backgroundColor: "#1a73e8",
+        },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { title: (items) => byClass[items[0].dataIndex].class_name } },
+        tooltip: {
+          callbacks: {
+            title: (items) => byClass[items[0].dataIndex].class_name,
+          },
+        },
       },
-      scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: { precision: 0 },
+        },
+      },
     },
   });
 }
@@ -43,27 +63,32 @@ function renderChart(byClass) {
 function renderRecent(recent) {
   const list = document.getElementById("recent-list");
   list.textContent = "";
+
   if (!recent.length) {
-    const li = document.createElement("li");
-    li.textContent = "Không có kết quả";
-    list.appendChild(li);
+    const emptyItem = document.createElement("li");
+    emptyItem.textContent = "Không có kết quả";
+    list.appendChild(emptyItem);
     return;
   }
-  recent.forEach((s) => {
+
+  recent.forEach((student) => {
     const li = document.createElement("li");
+
     const img = document.createElement("img");
     img.className = "avatar-sm";
     img.alt = "";
-    img.src = s.avatar_url;
-    bindAvatarFallback(img);
+    setAvatarSrc(img, student.avatar_url);
 
-    const a = document.createElement("a");
-    a.href = `/pages/detail.html?id=${encodeURIComponent(s.id)}`;
-    a.textContent = `${s.full_name} (${s.student_code})`;
-    li.append(img, a);
+    const link = document.createElement("a");
+    link.href = `/pages/detail.html?id=${encodeURIComponent(student.id)}`;
+    link.textContent = `${student.full_name} (${student.student_code})`;
+
+    li.append(img, link);
     list.appendChild(li);
   });
 }
+
+// ── TẢI DỮ LIỆU & KHỞI TẠO ───────────────────────────────────────────────────
 
 async function loadDashboard() {
   showStatus("Đang tải...", "info");
@@ -81,6 +106,7 @@ async function loadDashboard() {
 (async function init() {
   const me = await requireLogin("admin");
   if (!me) return;
+
   initAdminNav(me);
   loadDashboard();
 })();

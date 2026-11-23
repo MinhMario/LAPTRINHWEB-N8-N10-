@@ -722,7 +722,7 @@ body {
 /* Detail Page 2-Column Layout */
 .detail-layout {
   display: grid;
-  grid-template-columns: 340px 1fr;
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
   gap: var(--space-xl);
   align-items: start;
 }
@@ -1182,7 +1182,7 @@ body {
 /* Responsive Media Queries */
 @media (max-width: 900px) {
   .detail-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .profile-card {
     position: static;

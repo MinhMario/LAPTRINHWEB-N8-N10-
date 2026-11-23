@@ -422,5 +422,23 @@ function showToast(message, type = "info") {
  */
 function handleAvatarError(img) {
   img.onerror = null;
-  img.src = DEFAULT_AVATAR;
+  if (img.src !== DEFAULT_AVATAR) {
+    img.src = DEFAULT_AVATAR;
+  }
+}
+
+/**
+ * Gán ảnh đại diện an toàn: đăng ký onerror TRƯỚC khi set src, để ảnh 404
+ * (ví dụ file không còn trên đĩa) vẫn tự chuyển sang avatar mặc định.
+ * Dùng cho mọi <img> avatar cần gán src bằng JS.
+ * @param {HTMLImageElement} img
+ * @param {string|null|undefined} url
+ */
+function setAvatarSrc(img, url) {
+  img.onerror = () => handleAvatarError(img);
+  img.src = url || DEFAULT_AVATAR;
+  // Ảnh có thể đã lỗi trước khi listener được gắn (HTML parse xong, ảnh 404 rất nhanh)
+  if (img.complete && img.naturalWidth === 0 && img.src !== DEFAULT_AVATAR) {
+    handleAvatarError(img);
+  }
 }

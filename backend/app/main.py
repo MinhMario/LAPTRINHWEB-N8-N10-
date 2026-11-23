@@ -1,13 +1,29 @@
 """Điểm vào của ứng dụng.  Chạy:  uvicorn app.main:app --reload"""
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
 from app.core.errors import register_error_handlers
+from app.core.rate_limit import login_limiter
 from app.routers import audit, auth, classes, me, requests, skills, stats, students
 
-app = FastAPI(title="Quản lý hồ sơ sinh viên", description="Xem API.md để biết hợp đồng chi tiết.")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    # Mỗi lần khởi động server là một phiên mới: không giữ bộ đếm đăng nhập của lần chạy trước
+    # (pytest dùng TestClient trong cùng tiến trình nên cần dọn sạch để test độc lập).
+    login_limiter.clear()
+    yield
+
+
+app = FastAPI(
+    title="Quản lý hồ sơ sinh viên",
+    description="Xem API.md để biết hợp đồng chi tiết.",
+    lifespan=lifespan,
+)
 
 app.add_middleware(
     SessionMiddleware,

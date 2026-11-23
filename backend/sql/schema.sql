@@ -1,4 +1,4 @@
--- schema.sql : CSDL website quản lý hồ sơ sinh viên (MySQL 8, thiết kế v2 - 9 bảng)
+﻿-- schema.sql : CSDL website quản lý hồ sơ sinh viên (MySQL 8, thiết kế v2 - 9 bảng)
 -- Tài khoản mẫu:
 --   admin        / 123456     (1 admin duy nhất)
 --   B24DTCN001   / Ptit@2026  (sinh viên, KHÔNG bị buộc đổi mật khẩu)
@@ -171,26 +171,26 @@ INSERT INTO classes (id, code, name, major_id) VALUES
 (5,'D24KHMT01','Khoa học máy tính 1',4);
 
 INSERT INTO students (id, user_id, student_code, full_name, birth_date, gender, email, phone, address, avatar_filename, hobbies, class_id, created_at) VALUES
-(1,2,'B24DTCN001','Nguyễn Văn An','2006-09-16','Nam','b24dtcn001@stu.ptit.edu.vn','0978778932','Hà Đông, Hà Nội','sample-01.jpg','Nghe nhạc, chụp ảnh',1,'2026-10-02 08:01:00'),
+(1,2,'B24DTCN001','Nguyễn Văn An','2006-09-16','Nam','b24dtcn001@stu.ptit.edu.vn','0978778932','Hà Đông, Hà Nội',NULL,'Nghe nhạc, chụp ảnh',1,'2026-10-02 08:01:00'),
 (2,3,'B24DTCN002','Trần Thị Bình','2006-12-21','Nữ','b24dtcn002@stu.ptit.edu.vn','0992174218','Thanh Xuân, Hà Nội',NULL,'Bóng đá, chạy bộ',2,'2026-10-03 08:02:00'),
-(3,4,'B24DTCN003','Lê Hoàng Cường','2006-09-03','Nam','b24dtcn003@stu.ptit.edu.vn','0909679290','Nam Từ Liêm, Hà Nội','sample-03.jpg','Chơi game, lập trình',3,'2026-10-04 08:03:00'),
-(4,5,'B24DTCN004','Phạm Minh Đức','2006-08-19','Nam','b24dtcn004@stu.ptit.edu.vn','0900339075','Cầu Giấy, Hà Nội','sample-04.jpg','Du lịch, nấu ăn',4,'2026-10-05 08:04:00'),
-(5,6,'B24DTCN005','Hoàng Thị Giang','2006-11-09','Nữ','b24dtcn005@stu.ptit.edu.vn','0938347017','Hà Đông, Hà Nội','sample-05.jpg','Vẽ, xem phim',5,'2026-10-06 08:05:00'),
-(6,7,'B24DTCN006','Vũ Quang Huy','2006-01-03','Nam','b24dtcn006@stu.ptit.edu.vn','0968145384','Thanh Xuân, Hà Nội','sample-06.jpg','Đọc sách, chơi cờ vua',1,'2026-10-07 08:06:00'),
-(7,8,'B24DTCN007','Đặng Thị Lan','2006-11-01','Nữ','b24dtcn007@stu.ptit.edu.vn','0991614610','Nam Từ Liêm, Hà Nội','sample-07.jpg','Nghe nhạc, chụp ảnh',2,'2026-10-08 08:07:00'),
-(8,9,'B24DTCN008','Bùi Tuấn Kiệt','2006-10-21','Nam','b24dtcn008@stu.ptit.edu.vn','0933076661',NULL,'sample-08.jpg','Bóng đá, chạy bộ',3,'2026-10-09 08:08:00'),
+(3,4,'B24DTCN003','Lê Hoàng Cường','2006-09-03','Nam','b24dtcn003@stu.ptit.edu.vn','0909679290','Nam Từ Liêm, Hà Nội',NULL,'Chơi game, lập trình',3,'2026-10-04 08:03:00'),
+(4,5,'B24DTCN004','Phạm Minh Đức','2006-08-19','Nam','b24dtcn004@stu.ptit.edu.vn','0900339075','Cầu Giấy, Hà Nội',NULL,'Du lịch, nấu ăn',4,'2026-10-05 08:04:00'),
+(5,6,'B24DTCN005','Hoàng Thị Giang','2006-11-09','Nữ','b24dtcn005@stu.ptit.edu.vn','0938347017','Hà Đông, Hà Nội',NULL,'Vẽ, xem phim',5,'2026-10-06 08:05:00'),
+(6,7,'B24DTCN006','Vũ Quang Huy','2006-01-03','Nam','b24dtcn006@stu.ptit.edu.vn','0968145384','Thanh Xuân, Hà Nội',NULL,'Đọc sách, chơi cờ vua',1,'2026-10-07 08:06:00'),
+(7,8,'B24DTCN007','Đặng Thị Lan','2006-11-01','Nữ','b24dtcn007@stu.ptit.edu.vn','0991614610','Nam Từ Liêm, Hà Nội',NULL,'Nghe nhạc, chụp ảnh',2,'2026-10-08 08:07:00'),
+(8,9,'B24DTCN008','Bùi Tuấn Kiệt','2006-10-21','Nam','b24dtcn008@stu.ptit.edu.vn','0933076661',NULL,NULL,'Bóng đá, chạy bộ',3,'2026-10-09 08:08:00'),
 (9,10,'B24DTCN009','Ngô Thanh Mai','2006-02-05','Nữ','b24dtcn009@stu.ptit.edu.vn','0934514506','Hà Đông, Hà Nội',NULL,'Chơi game, lập trình',4,'2026-10-10 08:09:00'),
-(10,11,'B24DTCN010','Đỗ Văn Nam','2006-04-15','Nam','b24dtcn010@stu.ptit.edu.vn','0931007728','Thanh Xuân, Hà Nội','sample-10.jpg','Du lịch, nấu ăn',5,'2026-10-11 08:10:00'),
-(11,12,'B24DTCN011','Dương Thị Oanh','2006-04-01','Nữ','b24dtcn011@stu.ptit.edu.vn','0983266166','Nam Từ Liêm, Hà Nội','sample-11.jpg','Vẽ, xem phim',1,'2026-10-12 08:11:00'),
-(12,13,'B24DTCN012','Lý Gia Phúc','2006-11-19','Nam','b24dtcn012@stu.ptit.edu.vn','0949403269',NULL,'sample-12.jpg','Đọc sách, chơi cờ vua',2,'2026-10-13 08:12:00'),
-(13,14,'B24DTCN013','Phan Thị Quỳnh','2006-06-27','Nữ','b24dtcn013@stu.ptit.edu.vn','0910237409','Hà Đông, Hà Nội','sample-13.jpg','Nghe nhạc, chụp ảnh',3,'2026-10-14 08:13:00'),
-(14,15,'B24DTCN014','Trịnh Đức Thắng','2006-01-20','Nam','b24dtcn014@stu.ptit.edu.vn','0946111393','Thanh Xuân, Hà Nội','sample-14.jpg','Bóng đá, chạy bộ',4,'2026-10-15 08:14:00'),
-(15,16,'B24DTCN015','Nguyễn Thị Thu Trang','2006-03-28','Nữ','b24dtcn015@stu.ptit.edu.vn','0955972979','Nam Từ Liêm, Hà Nội','sample-15.jpg','Chơi game, lập trình',5,'2026-10-16 08:15:00'),
-(16,17,'B24DTCN016','Lê Văn Tùng','2006-03-24','Nam','b24dtcn016@stu.ptit.edu.vn','0962243933',NULL,'sample-16.jpg','Du lịch, nấu ăn',1,'2026-10-17 08:16:00'),
+(10,11,'B24DTCN010','Đỗ Văn Nam','2006-04-15','Nam','b24dtcn010@stu.ptit.edu.vn','0931007728','Thanh Xuân, Hà Nội',NULL,'Du lịch, nấu ăn',5,'2026-10-11 08:10:00'),
+(11,12,'B24DTCN011','Dương Thị Oanh','2006-04-01','Nữ','b24dtcn011@stu.ptit.edu.vn','0983266166','Nam Từ Liêm, Hà Nội',NULL,'Vẽ, xem phim',1,'2026-10-12 08:11:00'),
+(12,13,'B24DTCN012','Lý Gia Phúc','2006-11-19','Nam','b24dtcn012@stu.ptit.edu.vn','0949403269',NULL,NULL,'Đọc sách, chơi cờ vua',2,'2026-10-13 08:12:00'),
+(13,14,'B24DTCN013','Phan Thị Quỳnh','2006-06-27','Nữ','b24dtcn013@stu.ptit.edu.vn','0910237409','Hà Đông, Hà Nội',NULL,'Nghe nhạc, chụp ảnh',3,'2026-10-14 08:13:00'),
+(14,15,'B24DTCN014','Trịnh Đức Thắng','2006-01-20','Nam','b24dtcn014@stu.ptit.edu.vn','0946111393','Thanh Xuân, Hà Nội',NULL,'Bóng đá, chạy bộ',4,'2026-10-15 08:14:00'),
+(15,16,'B24DTCN015','Nguyễn Thị Thu Trang','2006-03-28','Nữ','b24dtcn015@stu.ptit.edu.vn','0955972979','Nam Từ Liêm, Hà Nội',NULL,'Chơi game, lập trình',5,'2026-10-16 08:15:00'),
+(16,17,'B24DTCN016','Lê Văn Tùng','2006-03-24','Nam','b24dtcn016@stu.ptit.edu.vn','0962243933',NULL,NULL,'Du lịch, nấu ăn',1,'2026-10-17 08:16:00'),
 (17,18,'B24DTCN017','Trần Hải Yến','2006-02-04','Nữ','b24dtcn017@stu.ptit.edu.vn','0983679160','Hà Đông, Hà Nội',NULL,'Vẽ, xem phim',2,'2026-10-18 08:17:00'),
-(18,19,'B24DTCN018','Hồ Anh Khoa','2006-08-10','Nam','b24dtcn018@stu.ptit.edu.vn','0908436469','Thanh Xuân, Hà Nội','sample-18.jpg','Đọc sách, chơi cờ vua',3,'2026-10-19 08:18:00'),
-(19,20,'B24DTCN019','Nguyễn Hoàng Long Vũ Minh Quân Thiên Phúc','2006-10-03','Nữ','b24dtcn019@stu.ptit.edu.vn','0982123789','Nam Từ Liêm, Hà Nội','sample-19.jpg','Nghe nhạc, chụp ảnh',4,'2026-10-20 08:19:00'),
-(20,21,'B24DTCN020','Đinh Công Danh','2006-04-02','Nam','b24dtcn020@stu.ptit.edu.vn','0943301467',NULL,'sample-20.jpg','Bóng đá, chạy bộ',5,'2026-10-21 08:20:00');
+(18,19,'B24DTCN018','Hồ Anh Khoa','2006-08-10','Nam','b24dtcn018@stu.ptit.edu.vn','0908436469','Thanh Xuân, Hà Nội',NULL,'Đọc sách, chơi cờ vua',3,'2026-10-19 08:18:00'),
+(19,20,'B24DTCN019','Nguyễn Hoàng Long Vũ Minh Quân Thiên Phúc','2006-10-03','Nữ','b24dtcn019@stu.ptit.edu.vn','0982123789','Nam Từ Liêm, Hà Nội',NULL,'Nghe nhạc, chụp ảnh',4,'2026-10-20 08:19:00'),
+(20,21,'B24DTCN020','Đinh Công Danh','2006-04-02','Nam','b24dtcn020@stu.ptit.edu.vn','0943301467',NULL,NULL,'Bóng đá, chạy bộ',5,'2026-10-21 08:20:00');
 
 INSERT INTO skills (id, name) VALUES
 (1,'Python'),

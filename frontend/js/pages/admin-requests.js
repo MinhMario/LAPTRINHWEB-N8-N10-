@@ -1,5 +1,9 @@
-// requests.js - duyệt / từ chối yêu cầu cập nhật hồ sơ của sinh viên
+/**
+ * js/pages/admin-requests.js - Admin xem, so sánh và duyệt/từ chối yêu cầu cập nhật hồ sơ
+ */
+
 const PAGE_SIZE = 10;
+
 const FIELD_LABELS = {
   phone: "Số điện thoại",
   address: "Địa chỉ",
@@ -7,7 +11,12 @@ const FIELD_LABELS = {
   skills: "Kỹ năng",
   social_links: "Mạng xã hội",
 };
-const STATUS_LABELS = { pending: "Chờ duyệt", approved: "Đã duyệt", rejected: "Từ chối" };
+
+const STATUS_LABELS = {
+  pending: "Chờ duyệt",
+  approved: "Đã duyệt",
+  rejected: "Từ chối",
+};
 
 let currentPage = 1;
 let currentRequestId = null;
@@ -22,137 +31,193 @@ const rejectBtn = document.getElementById("reject-btn");
 const confirmRejectBtn = document.getElementById("confirm-reject-btn");
 const approveBtn = document.getElementById("approve-btn");
 
-function statusBadge(status) {
+// ── HIỂN THỊ DANH SÁCH YÊU CẦU ───────────────────────────────────────────────
+
+function createStatusBadge(status) {
   const span = document.createElement("span");
   span.className = `badge badge-${status}`;
   span.textContent = STATUS_LABELS[status] || status;
   return span;
 }
 
-// ---------- Danh sách ----------
-function buildRow(r) {
+function appendCell(tr, text, className) {
+  const td = document.createElement("td");
+  td.textContent = text;
+  if (className) td.className = className;
+  tr.appendChild(td);
+  return td;
+}
+
+function buildRow(req) {
   const tr = document.createElement("tr");
-  const add = (text) => { const td = document.createElement("td"); td.textContent = text; tr.appendChild(td); return td; };
-  add(r.student_code);
-  add(r.full_name).className = "cell-name";
-  add(formatDateTime(r.created_at));
+
+  appendCell(tr, req.student_code);
+  appendCell(tr, req.full_name, "cell-name");
+  appendCell(tr, formatDateTime(req.created_at));
+
   const tdStatus = document.createElement("td");
-  tdStatus.appendChild(statusBadge(r.status));
+  tdStatus.appendChild(createStatusBadge(req.status));
   tr.appendChild(tdStatus);
-  add(formatDateTime(r.reviewed_at));
-  const tdAct = document.createElement("td");
-  const btn = document.createElement("button");
-  btn.type = "button";
-  btn.className = "btn btn-primary btn-sm";
-  btn.textContent = r.status === "pending" ? "Xem & duyệt" : "Xem";
-  btn.addEventListener("click", () => openRequest(r.id));
-  tdAct.appendChild(btn);
-  tr.appendChild(tdAct);
+
+  appendCell(tr, formatDateTime(req.reviewed_at));
+
+  const tdAction = document.createElement("td");
+  const viewBtn = document.createElement("button");
+  viewBtn.type = "button";
+  viewBtn.className = "btn btn-primary btn-sm";
+  viewBtn.textContent = req.status === "pending" ? "Xem & duyệt" : "Xem";
+  viewBtn.addEventListener("click", () => openRequest(req.id));
+  tdAction.appendChild(viewBtn);
+  tr.appendChild(tdAction);
+
   return tr;
 }
 
 async function loadRequests() {
   showStatus("Đang tải...", "info");
   tableBody.textContent = "";
-  const params = new URLSearchParams({ status: statusFilter.value, page: currentPage, page_size: PAGE_SIZE });
+
+  const params = new URLSearchParams({
+    status: statusFilter.value,
+    page: currentPage,
+    page_size: PAGE_SIZE,
+  });
+
   try {
     const data = await api(`/api/update-requests?${params}`);
+
     if (data.items.length === 0 && currentPage > 1 && data.total_pages > 0) {
       currentPage = data.total_pages;
       return loadRequests();
     }
+
     if (data.items.length === 0) {
       showStatus("Không có kết quả", "empty");
       pagination.textContent = "";
       return;
     }
+
     hideStatus();
-    data.items.forEach((r) => tableBody.appendChild(buildRow(r)));
-    renderPagination(pagination, data.page, data.total_pages, (p) => { currentPage = p; loadRequests(); });
+    data.items.forEach((req) => tableBody.appendChild(buildRow(req)));
+    renderPagination(pagination, data.page, data.total_pages, (page) => {
+      currentPage = page;
+      loadRequests();
+    });
   } catch (err) {
     showStatus((err && err.error) || "Không thể kết nối máy chủ, vui lòng thử lại", "error");
     pagination.textContent = "";
   }
 }
 
-// ---------- Hiển thị giá trị ở bảng so sánh ----------
-function valueNode(key, value) {
+// ── BẢNG SO SÁNH "HIỆN TẠI -> ĐỀ NGHỊ" ───────────────────────────────────────
+
+function createValueNode(key, value) {
   const wrap = document.createElement("div");
+
   if (value === undefined || value === null || value === "") {
     wrap.textContent = "---";
     return wrap;
   }
+
   if (Array.isArray(value)) {
-    if (!value.length) { wrap.textContent = "(trống)"; return wrap; }
+    if (!value.length) {
+      wrap.textContent = "(trống)";
+      return wrap;
+    }
+
     const ul = document.createElement("ul");
     value.forEach((item) => {
       const li = document.createElement("li");
-      if (key === "skills") li.textContent = `${item.name} (${item.level}/5)`;
-      else if (key === "social_links") li.textContent = `${item.platform}: ${item.url}`;
-      else li.textContent = typeof item === "object" ? JSON.stringify(item) : String(item);
+      if (key === "skills") {
+        li.textContent = `${item.name} (${item.level}/5)`;
+      } else if (key === "social_links") {
+        li.textContent = `${item.platform}: ${item.url}`;
+      } else {
+        li.textContent = typeof item === "object" ? JSON.stringify(item) : String(item);
+      }
       ul.appendChild(li);
     });
     wrap.appendChild(ul);
     return wrap;
   }
+
   wrap.textContent = String(value);
   return wrap;
 }
 
 function renderCompare(detail) {
-  const body = document.getElementById("compare-body");
-  body.textContent = "";
-  Object.keys(detail.new_data || {}).forEach((key) => {
+  const compareBody = document.getElementById("compare-body");
+  compareBody.textContent = "";
+
+  const currentData = detail.current || {};
+  const proposedData = detail.new_data || {};
+
+  Object.keys(proposedData).forEach((key) => {
     const tr = document.createElement("tr");
+
     const tdLabel = document.createElement("td");
     tdLabel.className = "cell-label";
     tdLabel.textContent = FIELD_LABELS[key] || key;
+
     const tdOld = document.createElement("td");
-    tdOld.appendChild(valueNode(key, (detail.current || {})[key]));
+    tdOld.appendChild(createValueNode(key, currentData[key]));
+
     const tdNew = document.createElement("td");
-    tdNew.appendChild(valueNode(key, detail.new_data[key]));
+    tdNew.appendChild(createValueNode(key, proposedData[key]));
+
     tr.append(tdLabel, tdOld, tdNew);
-    body.appendChild(tr);
+    compareBody.appendChild(tr);
   });
 }
 
-// ---------- Modal chi tiết ----------
+// ── MODAL CHI TIẾT & XỬ LÝ DUYỆT / TỪ CHỐI ──────────────────────────────────
+
 async function openRequest(id) {
   adminClearErrors(requestForm);
   adminClearErrors(modal);
   currentRequestId = id;
+
   rejectBox.hidden = true;
   confirmRejectBtn.hidden = true;
   requestForm.reset();
+
   try {
-    const d = await api(`/api/update-requests/${encodeURIComponent(id)}`);
+    const detail = await api(`/api/update-requests/${encodeURIComponent(id)}`);
+
     const avatar = document.getElementById("req-avatar");
-    bindAvatarFallback(avatar);
-    avatar.src = d.student.avatar_url;
-    setText("req-student-name", d.student.full_name);
-    setText("req-student-code", d.student.student_code);
-    setText("req-created", formatDateTime(d.created_at));
+    setAvatarSrc(avatar, detail.student.avatar_url);
+
+    setText("req-student-name", detail.student.full_name);
+    setText("req-student-code", detail.student.student_code);
+    setText("req-created", formatDateTime(detail.created_at));
+
     const statusEl = document.getElementById("req-status");
     statusEl.textContent = "";
-    statusEl.appendChild(statusBadge(d.status));
-    renderCompare(d);
+    statusEl.appendChild(createStatusBadge(detail.status));
+
+    renderCompare(detail);
 
     const reasonEl = document.getElementById("req-reject-reason");
-    reasonEl.hidden = !(d.status === "rejected" && d.reject_reason);
-    reasonEl.textContent = d.reject_reason ? `Lý do từ chối: ${d.reject_reason}` : "";
+    const hasRejectReason = detail.status === "rejected" && detail.reject_reason;
+    reasonEl.hidden = !hasRejectReason;
+    reasonEl.textContent = hasRejectReason ? `Lý do từ chối: ${detail.reject_reason}` : "";
 
-    // Chỉ yêu cầu pending mới có nút Duyệt / Từ chối
-    const isPending = d.status === "pending";
+    // Chỉ yêu cầu đang chờ duyệt mới hiện nút Duyệt / Từ chối
+    const isPending = detail.status === "pending";
     approveBtn.hidden = !isPending;
     rejectBtn.hidden = !isPending;
     approveBtn.disabled = false;
+
     modal.hidden = false;
   } catch (err) {
     showStatus((err && err.error) || "Không thể kết nối máy chủ, vui lòng thử lại", "error");
   }
 }
 
-function closeModal() { modal.hidden = true; currentRequestId = null; }
+function closeModal() {
+  modal.hidden = true;
+  currentRequestId = null;
+}
 
 async function afterProcessed(message) {
   closeModal();
@@ -164,6 +229,7 @@ async function afterProcessed(message) {
 approveBtn.addEventListener("click", async () => {
   adminClearErrors(modal);
   approveBtn.disabled = true;
+
   try {
     await api(`/api/update-requests/${currentRequestId}/approve`, { method: "POST" });
     await afterProcessed("Đã duyệt yêu cầu, hồ sơ sinh viên đã được cập nhật");
@@ -173,7 +239,7 @@ approveBtn.addEventListener("click", async () => {
   }
 });
 
-// Bấm "Từ chối" lần 1: hiện ô lý do. Lần 2 ("Xác nhận từ chối" = submit): gửi.
+// Bấm "Từ chối" lần 1 để hiện ô nhập lý do; bấm "Xác nhận từ chối" để gửi
 rejectBtn.addEventListener("click", () => {
   rejectBox.hidden = false;
   rejectBtn.hidden = true;
@@ -185,8 +251,13 @@ rejectBtn.addEventListener("click", () => {
 requestForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   adminClearErrors(modal);
+
   const reason = requestForm.elements.reject_reason.value.trim();
-  if (!reason) { adminShowError({ error: "Vui lòng nhập lý do từ chối", field: "reject_reason" }, modal); return; }
+  if (!reason) {
+    adminShowError({ error: "Vui lòng nhập lý do từ chối", field: "reject_reason" }, modal);
+    return;
+  }
+
   confirmRejectBtn.disabled = true;
   try {
     await api(`/api/update-requests/${currentRequestId}/reject`, {
@@ -202,14 +273,23 @@ requestForm.addEventListener("submit", async (e) => {
   }
 });
 
+// ── SỰ KIỆN & KHỞI TẠO ───────────────────────────────────────────────────────
+
 document.getElementById("modal-close").addEventListener("click", closeModal);
 document.getElementById("modal-close-x").addEventListener("click", closeModal);
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
-statusFilter.addEventListener("change", () => { currentPage = 1; loadRequests(); });
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeModal();
+});
+
+statusFilter.addEventListener("change", () => {
+  currentPage = 1;
+  loadRequests();
+});
 
 (async function init() {
   const me = await requireLogin("admin");
   if (!me) return;
+
   initAdminNav(me);
   loadRequests();
 })();

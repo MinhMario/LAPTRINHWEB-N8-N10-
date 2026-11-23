@@ -9,6 +9,7 @@
 </head>
 <body>
   <header class="site-header"></header>
+
   <main class="container">
     <h1 class="page-title">Duyệt yêu cầu cập nhật hồ sơ</h1>
 
@@ -25,27 +26,54 @@
 
     <div class="table-wrap">
       <table class="requests-table">
-        <thead><tr><th>Mã SV</th><th>Họ tên</th><th>Ngày gửi</th><th>Trạng thái</th><th>Ngày xử lý</th><th></th></tr></thead>
+        <thead>
+          <tr>
+            <th>Mã SV</th>
+            <th>Họ tên</th>
+            <th>Ngày gửi</th>
+            <th>Trạng thái</th>
+            <th>Ngày xử lý</th>
+            <th></th>
+          </tr>
+        </thead>
         <tbody id="request-table-body"></tbody>
       </table>
     </div>
+
     <div id="pagination" class="pagination-container"></div>
   </main>
+
   <footer class="site-footer"></footer>
 
+  <!-- Modal chi tiết & duyệt yêu cầu -->
   <div class="modal" id="request-modal" hidden>
     <div class="modal-content">
-      <div class="modal-head"><h2>Chi tiết yêu cầu</h2><button type="button" class="btn btn-outline btn-sm" id="modal-close-x" aria-label="Đóng">✕</button></div>
+      <div class="modal-head">
+        <h2>Chi tiết yêu cầu</h2>
+        <button type="button" class="btn btn-outline btn-sm" id="modal-close-x" aria-label="Đóng">✕</button>
+      </div>
 
       <div class="student-box">
         <img id="req-avatar" class="avatar-sm" src="/uploads/default-avatar.png" alt="">
-        <div><strong id="req-student-name"></strong><br><span class="text-muted" id="req-student-code"></span></div>
+        <div>
+          <strong id="req-student-name"></strong><br>
+          <span class="text-muted" id="req-student-code"></span>
+        </div>
       </div>
-      <p>Trạng thái: <span id="req-status"></span> · Gửi lúc <span id="req-created"></span></p>
+
+      <p>
+        Trạng thái: <span id="req-status"></span> · Gửi lúc <span id="req-created"></span>
+      </p>
 
       <div class="table-wrap">
         <table class="requests-table compare-table">
-          <thead><tr><th>Trường</th><th>Hiện tại</th><th>Đề nghị</th></tr></thead>
+          <thead>
+            <tr>
+              <th>Trường</th>
+              <th>Hiện tại</th>
+              <th>Đề nghị</th>
+            </tr>
+          </thead>
           <tbody id="compare-body"></tbody>
         </table>
       </div>

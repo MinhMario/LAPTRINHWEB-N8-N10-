@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.deps import user_allow_pwchange
 from app.core.errors import ApiError
+from app.core.rate_limit import login_limiter
 from app.core.security import hash_password, verify_password
 from app.db.database import get_db
 from app.models import Student, User
@@ -12,9 +13,26 @@ from app.schemas.auth import ChangePasswordIn, LoginIn
 
 router = APIRouter(tags=["Xác thực"])
 
+# Chống dò mật khẩu: tối đa 20 lần / 5 phút cho mỗi IP, và 10 lần / 5 phút cho mỗi tài khoản.
+LOGIN_IP_LIMIT = 20
+LOGIN_ACCOUNT_LIMIT = 10
+LOGIN_WINDOW_SECONDS = 5 * 60
+
+
+def _client_ip(request: Request) -> str:
+    forwarded = request.headers.get("x-forwarded-for", "")
+    if forwarded.strip():
+        return forwarded.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
 
 @router.post("/login")
 def login(data: LoginIn, request: Request, db: Session = Depends(get_db)):
+    client_ip = _client_ip(request)
+    login_limiter.check(f"login:ip:{client_ip}", limit=LOGIN_IP_LIMIT, window_seconds=LOGIN_WINDOW_SECONDS)
+    login_limiter.check(f"login:user:{data.username.strip().lower()}", limit=LOGIN_ACCOUNT_LIMIT,
+                        window_seconds=LOGIN_WINDOW_SECONDS)
+
     user = db.scalar(select(User).where(User.username == data.username))
     if user is None or not verify_password(data.password, user.password_hash):
         raise ApiError(401, "Sai tên đăng nhập hoặc mật khẩu")

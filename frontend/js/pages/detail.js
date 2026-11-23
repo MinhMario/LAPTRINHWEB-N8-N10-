@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       // 4. Render Cột 1 - Thẻ Profile Card
       const avatarImg = document.getElementById("detail-avatar");
-      avatarImg.src = student.avatar_url || DEFAULT_AVATAR;
+      setAvatarSrc(avatarImg, student.avatar_url);
       avatarImg.alt = student.full_name;
 
       const genderBadge = document.getElementById("detail-gender-badge");

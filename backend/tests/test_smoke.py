@@ -16,6 +16,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.core.config import settings
 from app.core.deps import admin_required, login_required, student_required
 from app.core.errors import ApiError, register_error_handlers
+from app.core.rate_limit import login_limiter
 from app.core.security import hash_password
 from app.db.database import SessionLocal
 from app.main import app
@@ -24,6 +25,25 @@ from app.routers import auth as auth_router
 from app.services import audit_service, upload_service
 
 SEED_STUDENT_PASSWORD = "Ptit@2026"
+
+
+@pytest.fixture(autouse=True)
+def reset_runtime_state():
+    """Đưa bộ đếm rate-limit và các yêu cầu pending sót lại về trạng thái sạch.
+
+    Bộ test phải chạy được trên DB mà trước đó có người thao tác tay (gửi yêu cầu qua UI,
+    thử đăng nhập nhiều lần...), không phụ thuộc trạng thái tích tụ của lần chạy trước.
+    """
+    login_limiter.clear()
+    with SessionLocal() as db:
+        db.execute(
+            update(ProfileUpdateRequest)
+            .where(ProfileUpdateRequest.status == "pending", ProfileUpdateRequest.id > 1)
+            .values(status="rejected", reject_reason="Dọn dữ liệu test")
+        )
+        db.commit()
+    yield
+    login_limiter.clear()
 
 
 @pytest.fixture
@@ -129,6 +149,8 @@ def test_student_detail_and_privacy(client):
 
 
 def test_special_seed_cases(client):
+    # Dữ liệu mẫu không kèm file ảnh riêng -> mọi sinh viên dùng ảnh đại diện mặc định.
+    assert client.get("/api/students/1").json()["avatar_url"] == "/uploads/default-avatar.png"
     assert client.get("/api/students/2").json()["avatar_url"] == "/uploads/default-avatar.png"
     assert client.get("/api/students/5").json()["skills"] == []
     assert client.get("/api/students/6").json()["social_links"] == []
@@ -220,6 +242,28 @@ def test_role_dependencies():
 def test_unknown_api_returns_json_404(client):
     r = client.get("/api/khong-co")
     assert r.status_code == 404 and r.json()["field"] is None and "error" in r.json()
+
+
+def test_skills_requires_login(client):
+    # API.md mục 2.2: khách không được gọi /api/skills
+    assert client.get("/api/skills?q=py").status_code == 401
+    adm = TestClient(app)
+    login(adm, "admin", "123456")
+    assert adm.get("/api/skills?q=py").status_code == 200
+
+
+def test_login_rate_limit_blocks_bruteforce():
+    from app.core.rate_limit import login_limiter
+
+    c = TestClient(app)
+    login_limiter.clear()
+    for _ in range(10):
+        assert login(c, "admin", "sai-mat-khau").status_code == 401
+    r = login(c, "admin", "123456")
+    assert r.status_code == 429 and r.json()["code"] == "TOO_MANY_REQUESTS"
+    # Khóa theo tài khoản: không ảnh hưởng tài khoản khác
+    assert login(TestClient(app), "B24DTCN001", SEED_STUDENT_PASSWORD).status_code == 200
+    login_limiter.clear()
 
 
 def test_static_files(client):
@@ -520,6 +564,6 @@ def test_student_update_requests_and_audit_logs():
                 .where(Student.id == 1)
                 .values(phone="0978778932", hobbies="Nghe nhạc, chụp ảnh")
             )
-            db.execute(delete(ProfileUpdateRequest).where(ProfileUpdateRequest.id > 3))
+            db.execute(delete(ProfileUpdateRequest).where(ProfileUpdateRequest.id > 1))
             db.execute(delete(AuditLog).where(AuditLog.id > 4))
             db.commit()

@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 4. Render thông tin hồ sơ (Cột 1: Profile Card)
     const avatarImg = document.getElementById("my-avatar");
     avatarImg.src = profile.avatar_url || DEFAULT_AVATAR;
+    setAvatarSrc(avatarImg, profile.avatar_url);
     avatarImg.alt = profile.full_name;
 
     const genderBadge = document.getElementById("my-gender-badge");

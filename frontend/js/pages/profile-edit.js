@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 3. Đổ dữ liệu chỉ đọc vào Cột 1 (Admin quản lý)
     const roAvatar = document.getElementById("ro-avatar");
     roAvatar.src = profile.avatar_url || DEFAULT_AVATAR;
+    setAvatarSrc(roAvatar, profile.avatar_url);
     roAvatar.alt = profile.full_name;
 
     document.getElementById("ro-name").textContent = profile.full_name;
