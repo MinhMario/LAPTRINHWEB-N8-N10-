@@ -6,7 +6,7 @@ Bài tập nhóm môn Lập trình Web. Back-end Python (FastAPI) + MySQL, front
 |---|---|
 | `API.md` | Hợp đồng API giữa front-end và back-end (nguồn duy nhất, đổi API thì sửa file này trước) |
 | `FRONTEND_GUIDE.md` | Quy ước viết front-end, cấu trúc `frontend/` |
-| `schema.sql` | Tạo CSDL `student_db` (9 bảng) kèm dữ liệu mẫu |
+| `schema.sql` | Tạo CSDL `student_db` (9 bảng) kèm dữ liệu mẫu — dùng cho chế độ MySQL |
 | `HUONG_DAN_CHAY.md` | Bản hướng dẫn chạy chi tiết hơn (từng bước, xử lý lỗi thường gặp) |
 
 > Các tài liệu `API.md`, `FRONTEND_GUIDE.md`, `HUONG_DAN_CHAY.md` nằm trong thư mục `docs/`.
@@ -17,8 +17,9 @@ Bài tập nhóm môn Lập trình Web. Back-end Python (FastAPI) + MySQL, front
 ### Cần có trước khi bắt đầu
 
 1. **Python 3.10 trở lên** — kiểm tra bằng `python --version`.
-2. **MySQL 8** (hoặc MariaDB 10.5+) — đang chạy ở cổng `3306`.
-3. Biết **mật khẩu `root` của MySQL** trên máy bạn (mật khẩu đặt lúc cài MySQL).
+2. **Một trong hai loại CSDL:**
+   - **SQLite** (khuyên dùng để demo/nộp bài): **không cần cài gì thêm**, dùng file `backend/student.db` tự sinh ra.
+   - **MySQL 8** (hoặc MariaDB 10.5+): cài đặt và bật ở cổng `3306`; cần biết mật khẩu `root`.
 
 > 💡 **Nhớ một điều duy nhất:** mọi lệnh bên dưới đều chạy **trong thư mục `backend/`**,
 > không phải thư mục gốc `Laptrinhweb(n8-n10)/`.
@@ -85,28 +86,49 @@ copy .env.example .env
 cp .env.example .env
 ```
 
-Mở file `backend/.env` vừa tạo và **chỉ cần sửa `DB_PASSWORD`** thành mật khẩu MySQL của bạn:
+Mở file `backend/.env` vừa tạo. Có **2 chế độ CSDL** — chọn 1:
+
+#### Chế độ A — SQLite (không cần cài MySQL, khuyên dùng)
+
+Chỉ cần dòng này, các dòng `DB_*` bên dưới **để nguyên**, có thể bỏ qua:
 
 ```env
+DB_ENGINE=sqlite
+```
+
+Bảng và dữ liệu mẫu sẽ được tạo tự động ở lần chạy server đầu tiên (file `backend/student.db`).
+Muốn tạo lại từ đầu: `python sql/init_sqlite.py`.
+
+#### Chế độ B — MySQL (đúng thiết kế môn học)
+
+```env
+DB_ENGINE=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
 DB_PASSWORD=mat_khau_mysql_cua_ban   # ← SỬA DÒNG NÀY
 DB_NAME=student_db
+```
 
+> Nếu MySQL của bạn **không có mật khẩu** (một số bản XAMPP), để trống: `DB_PASSWORD=`
+
+Các dòng còn lại dùng chung cho cả 2 chế độ:
+
+```env
 SECRET_KEY=doi-chuoi-nay-thanh-chuoi-ngau-nhien-dai   # nên đổi khi chạy thật
 DEFAULT_STUDENT_PASSWORD=Ptit@2026
 UPLOAD_DIR=uploads
 MAX_AVATAR_MB=2
 ```
 
-> Nếu MySQL của bạn **không có mật khẩu** (một số bản XAMPP), để trống: `DB_PASSWORD=`
-
 ---
 
 ### Bước 4. Tạo cơ sở dữ liệu và dữ liệu mẫu
 
-Lệnh này tạo database `student_db` gồm 4 ngành, 5 lớp, **1 admin + 20 sinh viên mẫu**.
+> ✅ **Đang dùng SQLite (chế độ A)?** **Bỏ qua bước này** — CSDL tự tạo khi chạy server.
+> Sau khi chạy, bạn có thể chạy `python sql/init_sqlite.py` bất cứ lúc nào để reset về dữ liệu mẫu.
+
+Với **MySQL (chế độ B)**, lệnh dưới tạo database `student_db` gồm 4 ngành, 5 lớp, **1 admin + 20 sinh viên mẫu**.
 
 **Cách 1 — Có lệnh `mysql` (dễ nhất):**
 
@@ -130,10 +152,26 @@ Kết quả mong đợi: `schema.sql imported OK - 20 students in student_db.`
 > ⚠️ **Chạy lại bước này sẽ XÓA SẠCH** database `student_db` (mất mọi dữ liệu đã thêm/sửa)
 > rồi tạo lại dữ liệu mẫu.
 
+<details>
+<summary>Xem nhanh: chạy hoàn toàn KHÔNG cần MySQL</summary>
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate            # macOS/Linux: source venv/bin/activate
+pip install -r requirements.txt
+copy .env.example .env           # .env.example đã sẵn DB_ENGINE=sqlite
+uvicorn app.main:app --reload
+```
+
+Mở <http://localhost:8000/> → đăng nhập `admin` / `123456`. Xong!
+
+</details>
+
 ---
 
 ### Bước 5. Chạy server
-
+cd backend sau đó
 ```bash
 uvicorn app.main:app --reload
 ```
@@ -157,6 +195,8 @@ Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 | **Giao diện web** | <http://localhost:8000/> |
 | **Thử API (Swagger)** | <http://localhost:8000/docs> |
 | Ảnh đại diện | `http://localhost:8000/uploads/...` |
+
+> Ở chế độ SQLite, terminal sẽ in `[sqlite] Đã tạo CSDL mẫu: ...\backend\student.db` ở lần chạy đầu tiên.
 
 **Tài khoản để đăng nhập thử:**
 
@@ -212,9 +252,9 @@ Kết quả đúng phải có `"ok": true` và `"role": "admin"`. Nếu lỗi �
 
 | Thông báo / hiện tượng | Cách sửa |
 |---|---|
-| `Access denied for user 'root'@'localhost'` | Sai `DB_PASSWORD` trong `backend/.env` (hoặc để trống nếu MySQL không có mật khẩu) |
+| `Access denied for user 'root'@'localhost'` | Đang dùng chế độ **MySQL**: sai `DB_PASSWORD` trong `backend/.env` (hoặc để trống nếu MySQL không có mật khẩu). Muốn khỏi cài MySQL: đổi `DB_ENGINE=sqlite` |
 | `Unknown database 'student_db'` | Chưa làm Bước 4 — chạy `python sql/import_schema.py` |
-| `Can't connect to MySQL server on '127.0.0.1'` | MySQL chưa bật: mở XAMPP/Laragon, hoặc `net start mysql` (Run as Administrator) |
+| `Can't connect to MySQL server on '127.0.0.1'` | MySQL chưa bật: mở XAMPP/Laragon, hoặc `net start mysql` (Run as Administrator). Hoặc đổi `DB_ENGINE=sqlite` |
 | `Could not import module "app.main"` | Đang đứng sai thư mục: `cd backend` rồi chạy lại |
 | `ModuleNotFoundError: No module named 'fastapi'` | Chưa activate venv (thiếu chữ `(venv)`) hoặc chưa `pip install -r requirements.txt` |
 | `[Errno 10048] error while attempting to bind on address ('127.0.0.1', 8000)` | Cổng 8000 đang bận: tắt server cũ (`Ctrl + C` ở terminal khác) hoặc chạy `--port 8080` |
@@ -235,10 +275,15 @@ pytest -v
 
 Kết quả đúng: mọi dòng đều `PASSED`, dòng cuối giống `22 passed`.
 
-- Test chạy trên CSDL thật, nên **nạp lại `schema.sql` (Bước 4)** trước khi chạy để có dữ liệu mẫu sạch.
+- **Chạy ở chế độ nào cũng được** (`DB_ENGINE=sqlite` hoặc `mysql`) — cả 2 đều 22/22.
+  Riêng SQLite: test tự dựng file `student.db` nếu chưa có.
+- Nếu dùng MySQL, nên **nạp lại `schema.sql` (Bước 4)** trước khi chạy để có dữ liệu mẫu sạch.
+  Chế độ SQLite thì chỉ cần `python sql/init_sqlite.py` để reset.
 - Bộ test tự dọn dữ liệu tạm nó tạo ra và xử lý luôn yêu cầu `pending` còn sót từ lần thao tác tay trước đó,
   nên **chạy lại nhiều lần vẫn xanh**.
 - Cảnh báo `StarletteDeprecationWarning: Using httpx ...` chỉ là deprecation, **có thể bỏ qua**.
+- 2 kiểm tra so sánh chuỗi tiếng Việt (tìm không dấu, thứ tự sắp xếp) chỉ chạy khi `DB_ENGINE=mysql`,
+  vì SQLite không có collation `utf8mb4_unicode_ci`.
 
 ## 3. Cấu trúc thư mục
 
@@ -257,17 +302,28 @@ Laptrinhweb(n8-n10)/
 backend/app/
 ├── main.py           # tạo FastAPI, session, lifespan, gắn router, mount frontend/ và uploads/
 ├── core/
-│   ├── config.py     # đọc .env
+│   ├── config.py     # đọc .env, chọn CSDL (DB_ENGINE=sqlite|mysql)
 │   ├── deps.py       # ai gọi được endpoint nào: optional_user / login_required / admin_required / student_required
 │   ├── errors.py     # mọi lỗi về dạng {error, field, code?}; lỗi validate 422 -> 400
 │   ├── rate_limit.py # chống dò mật khẩu cho /api/login
 │   └── security.py   # băm mật khẩu (bcrypt)
-├── db/database.py    # kết nối CSDL, get_db
+├── db/
+│   ├── database.py   # engine + get_db; tự tạo bảng khi chạy SQLite
+│   └── seed_data.py  # dữ liệu mẫu cho SQLite (trùng schema.sql)
 ├── models/           # SQLAlchemy, mỗi bảng một file (9 bảng)
 ├── schemas/          # hình dạng JSON vào/ra (khớp API.md)
 ├── routers/          # chỉ nhận request và trả JSON, giữ mỏng
 └── services/         # NGHIỆP VỤ + giao dịch (tài liệu CSDL mục 4)
 ```
+
+Hai chế độ CSDL:
+
+| | `DB_ENGINE=sqlite` (mặc định trong `.env.example`) | `DB_ENGINE=mysql` |
+|---|---|---|
+| Cần cài | Không (chỉ Python) | MySQL 8 |
+| Dữ liệu | File `backend/student.db`, tự tạo khi chạy server | `sql/schema.sql` |
+| Tạo lại CSDL | `python sql/init_sqlite.py` | `python sql/import_schema.py` |
+| Dùng khi | Demo, nộp bài, máy khác mở là chạy | Nộp/demo theo đúng yêu cầu MySQL |
 
 ## 4. Tiến độ (theo mốc trong API.md mục 8)
 
@@ -292,9 +348,10 @@ backend/app/
 
 ## 6. Lưu ý
 
-- **Không dùng `create_all()`**. Bảng do `schema.sql` tạo. Đổi cấu trúc bảng thì sửa đồng thời `schema.sql`, `app/models/`, và `API.md` nếu JSON đổi.
-- `pending_flag` trong `profile_update_requests` là cột tự tính, không ghi tay.
-- Đổi `SECRET_KEY` trong `.env`; không commit file `.env`.
+- **Không dùng `create_all()`** với MySQL. Bảng do `schema.sql` tạo. Đổi cấu trúc bảng thì sửa đồng thời `schema.sql`, `app/models/` (SQLite tạo bảng từ model nên phải khớp), và `API.md` nếu JSON đổi.
+- `pending_flag` trong `profile_update_requests` là cột thường (không phải cột sinh tự động), do `services/request_service.py` gán 1 khi pending và NULL khi đã xử lý — để chạy được trên cả MySQL và SQLite.
+- `students.updated_at` do `student_service` gán khi cập nhật (không dùng `ON UPDATE CURRENT_TIMESTAMP`).
+- Đổi `SECRET_KEY` trong `.env`; không commit file `.env` và không commit `*.db`.
 - Sinh viên chưa cập nhật ảnh sẽ dùng `uploads/default-avatar.png` (schema để `avatar_filename = NULL`); đừng trỏ tới file ảnh không tồn tại.
 - Các tài liệu tham chiếu trong README nằm ở `docs/` (`API.md`, `FRONTEND_GUIDE.md`, `HUONG_DAN_CHAY.md`).
 - Phân công Git: back-end chỉ sửa `backend/app/`, `backend/tests/`, `backend/sql/schema.sql`, `docs/API.md`; front-end chỉ sửa `frontend/`.
@@ -307,7 +364,8 @@ Dùng khi bạn đã thêm/sửa lung tung và muốn quay lại dữ liệu m�
 
 ```bash
 cd backend
-python sql/import_schema.py          # hoặc: mysql -u root -p < sql/schema.sql
+python sql/init_sqlite.py            # nếu DB_ENGINE=sqlite
+python sql/import_schema.py          # nếu DB_ENGINE=mysql (hoặc: mysql -u root -p < sql/schema.sql)
 ```
 
 **2) Dọn ảnh đã upload** (giữ lại ảnh mặc định):

@@ -64,7 +64,7 @@ def submit_request(db: Session, student: Student, data: object) -> dict:
     cleaned = _validate_request_payload(data)
     if db.query(ProfileUpdateRequest.id).filter(ProfileUpdateRequest.student_id == student.id, ProfileUpdateRequest.status == "pending").first():
         raise ApiError(400, "Bạn đang có yêu cầu chờ duyệt")
-    req = ProfileUpdateRequest(student_id=student.id, new_data=cleaned, status="pending")
+    req = ProfileUpdateRequest(student_id=student.id, new_data=cleaned, status="pending", pending_flag=1)
     db.add(req)
     try: db.commit()
     except IntegrityError:
@@ -101,7 +101,7 @@ def approve_request(db: Session, admin: User, request_id: int) -> dict:
     if "hobbies" in cleaned: student.hobbies = cleaned["hobbies"] or None
     if "skills" in cleaned: student_service.sync_student_skills(db, student, cleaned["skills"])
     if "social_links" in cleaned: student_service.sync_student_social_links(db, student, cleaned["social_links"])
-    req.status, req.reviewed_by, req.reviewed_at = "approved", admin.id, datetime.now().replace(microsecond=0)
+    req.status, req.pending_flag, req.reviewed_by, req.reviewed_at = "approved", None, admin.id, datetime.now().replace(microsecond=0)
     audit_service.write_log(db, user_id=admin.id, action="approve", target_type="student", target_id=student.id,
                             old_data=old_data, new_data=_extract_current_fields(student, cleaned.keys()))
     db.commit()
@@ -114,7 +114,7 @@ def reject_request(db: Session, admin: User, request_id: int, reject_reason: str
     reason = (reject_reason or "").strip()
     if not reason: raise ApiError(400, "Vui lòng nhập lý do từ chối", field="reject_reason")
     if len(reason) > 255: raise ApiError(400, "Lý do từ chối không được vượt quá 255 ký tự", field="reject_reason")
-    req.status, req.reject_reason, req.reviewed_by, req.reviewed_at = "rejected", reason, admin.id, datetime.now().replace(microsecond=0)
+    req.status, req.pending_flag, req.reject_reason, req.reviewed_by, req.reviewed_at = "rejected", None, reason, admin.id, datetime.now().replace(microsecond=0)
     audit_service.write_log(db, user_id=admin.id, action="reject", target_type="student", target_id=req.student_id, new_data={"reject_reason": reason})
     db.commit()
     return {"ok": True}

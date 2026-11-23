@@ -10,3 +10,7 @@ venv/
 uploads/*
 !uploads/default-avatar.png
 !uploads/.gitkeep
+
+# CSDL SQLite tao tu dong khi chay DB_ENGINE=sqlite
+*.db
+*.db-journal

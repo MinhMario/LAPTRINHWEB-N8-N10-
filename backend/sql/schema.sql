@@ -57,7 +57,7 @@ CREATE TABLE students (
   hobbies TEXT NULL,
   class_id INT UNSIGNED NOT NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at DATETIME NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  updated_at DATETIME NULL DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE KEY uq_students_user (user_id),
   UNIQUE KEY uq_students_code (student_code),
@@ -105,7 +105,10 @@ CREATE TABLE profile_update_requests (
   student_id INT UNSIGNED NOT NULL,
   new_data JSON NOT NULL,
   status ENUM('pending','approved','rejected') NOT NULL DEFAULT 'pending',
-  pending_flag TINYINT GENERATED ALWAYS AS (IF(status = 'pending', 1, NULL)) STORED,
+  -- Chỉ có giá trị 1 khi status='pending', NULL khi đã xử lý; cặp (student_id, pending_flag)
+  -- UNIQUE bảo đảm mỗi sinh viên chỉ có tối đa 1 yêu cầu chờ duyệt.
+  -- Ghi giá trị này ở tầng ứng dụng (request_service) để chạy được trên cả MySQL và SQLite.
+  pending_flag TINYINT NULL,
   reviewed_by INT UNSIGNED NULL,
   reject_reason VARCHAR(255) NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

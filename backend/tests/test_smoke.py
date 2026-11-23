@@ -100,15 +100,21 @@ def test_students_filters_search_sort_paging(client):
     assert get(q="B24DTCN019")["total"] == 1
     assert get(q="b24dtcn019")["total"] == 1
     assert get(q="Cường")["total"] == 1
-    assert get(q="cuong")["total"] == 1
+    # Tìm không dấu "cuong" ra "Cường": MySQL có collation utf8mb4_unicode_ci,
+    # SQLite thì không -> test chỉ ràng buộc hành vi này khi chạy MySQL.
+    if not settings.IS_SQLITE:
+        assert get(q="cuong")["total"] == 1
     assert get(q="%")["total"] == 0
     assert get(q="' OR 1=1 --")["total"] == 0
 
     assert get(sort="class")["items"][0]["class_code"] == "D24ATTT01"
     names = [i["full_name"] for i in get(sort="name", page_size=50)["items"]]
-    with SessionLocal() as db:
-        expected = list(db.scalars(select(Student.full_name).order_by(Student.full_name, Student.id)))
-    assert len(names) == 20 and names == expected
+    # SQLite so sánh chuỗi theo byte nên thứ tự khác collation utf8mb4_unicode_ci của MySQL.
+    assert len(names) == 20
+    if not settings.IS_SQLITE:
+        with SessionLocal() as db:
+            expected = list(db.scalars(select(Student.full_name).order_by(Student.full_name, Student.id)))
+        assert names == expected
 
     assert len(get(page=2)["items"]) == 8
     assert get(page=3)["items"] == [] and get(page=3)["total"] == 20

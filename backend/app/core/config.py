@@ -16,6 +16,9 @@ def _path(value: str) -> Path:
 
 
 class Settings:
+    # DB_ENGINE=sqlite -> chạy bằng 1 file student.db, KHÔNG cần cài MySQL (dùng để demo/nộp bài nhanh).
+    # DB_ENGINE=mysql  -> dùng MySQL như schema.sql (mặc định khi không khai báo).
+    DB_ENGINE = os.getenv("DB_ENGINE", "mysql").strip().lower()
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
     DB_PORT = int(os.getenv("DB_PORT", "3306"))
     DB_USER = os.getenv("DB_USER", "root")
@@ -35,7 +38,18 @@ class Settings:
     PAGE_SIZE_MAX = 50
 
     @property
-    def DATABASE_URL(self) -> URL:
+    def IS_SQLITE(self) -> bool:
+        return self.DB_ENGINE == "sqlite"
+
+    @property
+    def SQLITE_PATH(self) -> Path:
+        p = Path(os.getenv("SQLITE_PATH", "student.db"))
+        return p if p.is_absolute() else BASE_DIR / p
+
+    @property
+    def DATABASE_URL(self) -> str | URL:
+        if self.IS_SQLITE:
+            return f"sqlite:///{self.SQLITE_PATH.as_posix()}"
         return URL.create(
             "mysql+pymysql",
             username=self.DB_USER,

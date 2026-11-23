@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Date, DateTime, Enum, FetchedValue, ForeignKey, Integer, String, Text, func
+from sqlalchemy import Date, DateTime, Enum, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.database import Base
@@ -22,7 +22,7 @@ class Student(Base):
     hobbies: Mapped[str | None] = mapped_column(Text)
     class_id: Mapped[int] = mapped_column(ForeignKey("classes.id", ondelete="RESTRICT"))
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
-    updated_at: Mapped[datetime | None] = mapped_column(DateTime, server_default=FetchedValue(), server_onupdate=FetchedValue())
+    updated_at: Mapped[datetime | None] = mapped_column(DateTime)
 
     user: Mapped["User | None"] = relationship()
     classroom: Mapped["ClassRoom"] = relationship(back_populates="students")

@@ -3,7 +3,7 @@ import io
 import json
 import re
 import zipfile
-from datetime import date
+from datetime import date, datetime
 from xml.sax.saxutils import escape as xml_escape
 
 from fastapi import UploadFile
@@ -240,6 +240,8 @@ def _apply_fields(student: Student, cleaned: dict):
     student.hobbies = cleaned["hobbies"]
     student.class_id = cleaned["classroom"].id
     student.classroom = cleaned["classroom"]
+    # Gán thủ công thay cho ON UPDATE CURRENT_TIMESTAMP (không có trên SQLite)
+    student.updated_at = datetime.now().replace(microsecond=0)
 
 
 def sync_student_skills(db: Session, student: Student, skills_data: list[dict]):

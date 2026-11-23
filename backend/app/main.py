@@ -8,6 +8,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.core.config import settings
 from app.core.errors import register_error_handlers
 from app.core.rate_limit import login_limiter
+from app.db.database import init_sqlite_db
 from app.routers import audit, auth, classes, me, requests, skills, stats, students
 
 
@@ -16,6 +17,9 @@ async def lifespan(_: FastAPI):
     # Mỗi lần khởi động server là một phiên mới: không giữ bộ đếm đăng nhập của lần chạy trước
     # (pytest dùng TestClient trong cùng tiến trình nên cần dọn sạch để test độc lập).
     login_limiter.clear()
+    # Chế độ SQLite: tự tạo bảng + dữ liệu mẫu nếu chưa có file student.db
+    if init_sqlite_db():
+        print(f"[sqlite] Đã tạo CSDL mẫu: {settings.SQLITE_PATH}")
     yield
 
 
